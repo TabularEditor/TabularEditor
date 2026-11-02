@@ -1,5 +1,4 @@
-﻿using Antlr4.Runtime;
-using Microsoft.CSharp;
+﻿using Microsoft.CSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,14 +18,13 @@ namespace TabularEditor.TextServices
     {
 
 
-        int FindTokenAtPos(IList<IToken> ts, int pos)
+        int FindTokenAtPos(IList<CSharpLexerToken> ts, int pos)
         {
             var l = 0; var r = ts.Count - 1;
             while (l <= r)
             {
                 var m = (l + r) / 2;
                 var t = ts[m];
-                if (t == null) return -1;
                 if (t.StopIndex < pos) l = m + 1;
                 else if (t.StartIndex > pos) r = m - 1;
                 else return m;
@@ -34,9 +32,9 @@ namespace TabularEditor.TextServices
             return -1;
         }
 
-        private Antlr4.Runtime.CommonTokenStream Ts;
+        private List<CSharpLexerToken> Ts;
 
-        private int FindPrevID(IList<IToken> tokens, int fromIndex)
+        private int FindPrevID(IList<CSharpLexerToken> tokens, int fromIndex)
         {
             int terminator;
             int result = FindPrevID(tokens, fromIndex, out terminator);
@@ -44,25 +42,25 @@ namespace TabularEditor.TextServices
             return result;
         }
 
-        private int FindPrevID(IList<IToken> tokens, int fromIndex, out int terminator)
+        private int FindPrevID(IList<CSharpLexerToken> tokens, int fromIndex, out int terminator)
         {
             terminator = -1;
             if (fromIndex <= 0) return -1;
             return FindValid(tokens, fromIndex-1, true, true, out terminator, DefaultTerminators);
         }
 
-        private readonly int[] DefaultTerminators = new[] { CSharpLexer.SEMICOLON, CSharpLexer.OP_LAMBDA, CSharpLexer.ASSIGNMENT };
+        private readonly int[] DefaultTerminators = new[] { CSharpToken.SEMICOLON, CSharpToken.OP_LAMBDA, CSharpToken.ASSIGNMENT };
 
-        private int FindNext(IList<IToken> tokens, int fromIndex, int findTokenType)
+        private int FindNext(IList<CSharpLexerToken> tokens, int fromIndex, int findTokenType)
         {
             int terminator = 0;
             return Find(tokens, fromIndex, findTokenType, false, true, out terminator);
         }
         
-        private int FindValid(IList<IToken> tokens, int fromIndex, bool backward, bool skipParens, out int terminator, params int[] terminators)
+        private int FindValid(IList<CSharpLexerToken> tokens, int fromIndex, bool backward, bool skipParens, out int terminator, params int[] terminators)
         {
             terminator = -1;
-            IToken token;
+            CSharpLexerToken token;
             var i = fromIndex;
             var parenDepth = 0;
             while (true)
@@ -70,19 +68,19 @@ namespace TabularEditor.TextServices
                 token = tokens[i];
                 if (terminators.Contains(token.Type) && (parenDepth == 0 || !skipParens)) { terminator = token.Type; return i; }
                 else if (ValidObjectType(token.Type) && (parenDepth == 0 || !skipParens)) return i;
-                else if (token.Type == CSharpLexer.OPEN_PARENS || token.Type == CSharpLexer.OPEN_BRACKET) parenDepth += (backward ? -1 : 1);
-                else if (token.Type == CSharpLexer.CLOSE_PARENS || token.Type == CSharpLexer.CLOSE_BRACKET) parenDepth += backward ? 1 : -1;
+                else if (token.Type == CSharpToken.OPEN_PARENS || token.Type == CSharpToken.OPEN_BRACKET) parenDepth += (backward ? -1 : 1);
+                else if (token.Type == CSharpToken.CLOSE_PARENS || token.Type == CSharpToken.CLOSE_BRACKET) parenDepth += backward ? 1 : -1;
                 if (parenDepth < 0) return -1;
                 if (backward) i--;
                 else i++;
-                if (i < 0 || i >= Ts.Size) return -1;
+                if (i < 0 || i >= Ts.Count) return -1;
             }
         }
         
-        private int Find(IList<IToken> tokens, int fromIndex, int findTokenType, bool backward, bool skipParens, out int terminator, params int[] terminators )
+        private int Find(IList<CSharpLexerToken> tokens, int fromIndex, int findTokenType, bool backward, bool skipParens, out int terminator, params int[] terminators )
         {
             terminator = -1;
-            IToken token;
+            CSharpLexerToken token;
             var i = fromIndex;
             var parenDepth = 0;
             while (true)
@@ -90,23 +88,23 @@ namespace TabularEditor.TextServices
                 token = tokens[i];
                 if (terminators.Contains(token.Type) && (parenDepth == 0 || !skipParens)) { terminator = token.Type; return i; }
                 else if (token.Type == findTokenType && (parenDepth == 0 || !skipParens)) return i;
-                else if (token.Type == CSharpLexer.OPEN_PARENS || token.Type == CSharpLexer.OPEN_BRACKET) parenDepth += (backward ? -1 : 1);
-                else if (token.Type == CSharpLexer.CLOSE_PARENS || token.Type == CSharpLexer.CLOSE_BRACKET) parenDepth += backward ? 1 : -1;
+                else if (token.Type == CSharpToken.OPEN_PARENS || token.Type == CSharpToken.OPEN_BRACKET) parenDepth += (backward ? -1 : 1);
+                else if (token.Type == CSharpToken.CLOSE_PARENS || token.Type == CSharpToken.CLOSE_BRACKET) parenDepth += backward ? 1 : -1;
                 if (parenDepth < 0) return -1;
                 if (backward) i--;
                 else i++;
-                if (i < 0 || i >= Ts.Size) return -1;
+                if (i < 0 || i >= Ts.Count) return -1;
             }
         }
 
-        private IList<IToken> FindPrevIDs(IList<IToken> tokens, ref int fromIndex)
+        private IList<CSharpLexerToken> FindPrevIDs(IList<CSharpLexerToken> tokens, ref int fromIndex)
         {
-            var result = new List<IToken>();
+            var result = new List<CSharpLexerToken>();
             int t;
             var i = fromIndex;
             while(i != -1)
             {
-                i = FindValid(tokens, i-1, true, false, out t, new[] { CSharpLexer.SEMICOLON, CSharpLexer.OP_LAMBDA });
+                i = FindValid(tokens, i-1, true, false, out t, new[] { CSharpToken.SEMICOLON, CSharpToken.OP_LAMBDA });
                 if (t == -1 && i != -1)
                 {
                     result.Add(tokens[i]);
@@ -121,19 +119,16 @@ namespace TabularEditor.TextServices
         public Dictionary<string, Type> Classes = new Dictionary<string, Type>();
         private Dictionary<string, Type> localTypes = new Dictionary<string, Type>();
 
-        private CSharpLexer _lexer;
-
         public void Lex(string script)
         {
-            _lexer = new CSharpLexer(new Antlr4.Runtime.AntlrInputStream(script));
-            Ts = new Antlr4.Runtime.CommonTokenStream(_lexer, CSharpLexer.DefaultTokenChannel);
-            Ts.Fill();
+            Ts = new List<CSharpLexerToken>();
+            CSharpTokenizer.GetAllTokens(script, Ts);
         }
 
-        public IList<IToken> GetTokens()
+        public IList<CSharpLexerToken> GetTokens()
         {
-            return Ts.GetTokens().Where(t => t.Channel == 0)
-                .Select((t, index) => { (t as CommonToken).TokenIndex = index; return t; }).ToList();
+            return Ts.Where(t => t.Channel == CSharpTokenizer.DefaultChannel)
+                .Select((t, index) => t.WithTokenIndex(index)).ToList();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "mx")]
@@ -156,7 +151,7 @@ namespace TabularEditor.TextServices
                         });
         }
 
-        private Type GetPropPathType(IEnumerable<DotPath> paths, IList<IToken> list)
+        private Type GetPropPathType(IEnumerable<DotPath> paths, IList<CSharpLexerToken> list)
         {
             if (paths == null) return null;
             Type type = null;
@@ -167,15 +162,15 @@ namespace TabularEditor.TextServices
                 {
                     switch (path.TokenType)
                     {
-                        case CSharpLexer.HEX_INTEGER_LITERAL:
-                        case CSharpLexer.INTEGER_LITERAL:
+                        case CSharpToken.HEX_INTEGER_LITERAL:
+                        case CSharpToken.INTEGER_LITERAL:
                             type = typeof(int); continue;
-                        case CSharpLexer.CHARACTER_LITERAL:
+                        case CSharpToken.CHARACTER_LITERAL:
                             type = typeof(char); continue;
-                        case CSharpLexer.REAL_LITERAL:
+                        case CSharpToken.REAL_LITERAL:
                             type = typeof(float); continue;
-                        case CSharpLexer.REGULAR_STRING:
-                        case CSharpLexer.VERBATIUM_STRING:
+                        case CSharpToken.REGULAR_STRING:
+                        case CSharpToken.VERBATIUM_STRING:
                             type = typeof(string); continue;
                     }
                     if (localTypes.TryGetValue(p, out type)) continue;
@@ -231,15 +226,15 @@ namespace TabularEditor.TextServices
         {
             try
             {
-                var list = Ts.GetTokens().Where(t => t.Channel == 0).ToList();
+                var list = Ts.Where(t => t.Channel == CSharpTokenizer.DefaultChannel).ToList();
 
                 // Safe-cast (obj as Type)
                 var tokenIx = FindTokenAtPos(list, pos - 1);
                 if(tokenIx >= 3 
-                    && list[tokenIx].Type == CSharpLexer.DOT 
-                    && list[tokenIx - 1].Type == CSharpLexer.CLOSE_PARENS 
-                    && list[tokenIx - 2].Type == CSharpLexer.IDENTIFIER
-                    && list[tokenIx - 3].Type == CSharpLexer.AS)
+                    && list[tokenIx].Type == CSharpToken.DOT 
+                    && list[tokenIx - 1].Type == CSharpToken.CLOSE_PARENS 
+                    && list[tokenIx - 2].Type == CSharpToken.IDENTIFIER
+                    && list[tokenIx - 3].Type == CSharpToken.AS)
                 {
                     if (Classes.TryGetValue(list[tokenIx - 2].Text, out Type found)) return found;
                 }
@@ -254,22 +249,22 @@ namespace TabularEditor.TextServices
             }
         }
 
-        private Type GetAssignmentType(IList<IToken> list, int identifierToken)
+        private Type GetAssignmentType(IList<CSharpLexerToken> list, int identifierToken)
         {
             // Only search tokens that occurred before the last terminator:
             int terminatorType;
-            var lastTerminator = Find(list, identifierToken, CSharpLexer.SEMICOLON, true, false, out terminatorType, new[] { CSharpLexer.OP_LAMBDA, CSharpLexer.SEMICOLON });
+            var lastTerminator = Find(list, identifierToken, CSharpToken.SEMICOLON, true, false, out terminatorType, new[] { CSharpToken.OP_LAMBDA, CSharpToken.SEMICOLON });
 
             if (lastTerminator <= 0) return null;
 
             for(int i = lastTerminator - 1; i >= 0; i--)
             {
-                if(list[i].Type == CSharpLexer.IDENTIFIER && list[i].Text == list[identifierToken].Text && list[i+1].Type == CSharpLexer.ASSIGNMENT)
+                if(list[i].Type == CSharpToken.IDENTIFIER && list[i].Text == list[identifierToken].Text && list[i+1].Type == CSharpToken.ASSIGNMENT)
                 {
-                    var assignmentEnd = FindNext(list, i, CSharpLexer.SEMICOLON);
+                    var assignmentEnd = FindNext(list, i, CSharpToken.SEMICOLON);
                     if (assignmentEnd != -1)
                     {
-                        if(assignmentEnd > 2 && list[assignmentEnd - 2].Type == CSharpLexer.AS && list[assignmentEnd - 1].Type == CSharpLexer.IDENTIFIER && Classes.TryGetValue(list[assignmentEnd - 1].Text, out Type result))
+                        if(assignmentEnd > 2 && list[assignmentEnd - 2].Type == CSharpToken.AS && list[assignmentEnd - 1].Type == CSharpToken.IDENTIFIER && Classes.TryGetValue(list[assignmentEnd - 1].Text, out Type result))
                         {
                             return result;
                         }
@@ -286,39 +281,37 @@ namespace TabularEditor.TextServices
         {
             return Array.Exists(objectTypes, t => t == objectType);
         }
-        int[] objectTypes = new[] { CSharpLexer.IDENTIFIER, CSharpLexer.CHARACTER_LITERAL, CSharpLexer.INTEGER_LITERAL, CSharpLexer.REAL_LITERAL, CSharpLexer.HEX_INTEGER_LITERAL, CSharpLexer.REGULAR_STRING, CSharpLexer.VERBATIUM_STRING };
+        int[] objectTypes = new[] { CSharpToken.IDENTIFIER, CSharpToken.CHARACTER_LITERAL, CSharpToken.INTEGER_LITERAL, CSharpToken.REAL_LITERAL, CSharpToken.HEX_INTEGER_LITERAL, CSharpToken.REGULAR_STRING, CSharpToken.VERBATIUM_STRING };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "method")]
-        private Stack<DotPath> GetPropPathFrom(int pos, IList<IToken> list)
+        private Stack<DotPath> GetPropPathFrom(int pos, IList<CSharpLexerToken> list)
         {
             var i = FindTokenAtPos(list, pos - 1);
             if(i >= 0 && !ValidObjectType(list[i].Type)) i = FindPrevID(list, i);
 
-            if (i == -1 || list[i].Type == CSharpLexer.Eof) return null;
+            if (i == -1 || list[i].Type == CSharpToken.Eof) return null;
 
             var token = list[i];
             var propStack = new Stack<DotPath>();
 
             while (true)
             {
-                if (token == null) break;
-
                 propStack.Push(new DotPath()
                 {
                     Name = token.Text,
                     TokenIndex = i,
-                    Indexed = i < list.Count && list[i + 1].Type == CSharpLexer.OPEN_BRACKET,
+                    Indexed = i < list.Count && list[i + 1].Type == CSharpToken.OPEN_BRACKET,
                     TokenType = token.Type
                 });
                 int t;
                 i = FindPrevID(list, i, out t);
-                if (t == CSharpLexer.OP_LAMBDA)
+                if (t == CSharpToken.OP_LAMBDA)
                 {
                     // LINQ lambda methods - supports only one parameter, which is assumed to be of the same type as the collection upon which it is called:
                     var lambdaArgs = FindPrevIDs(list, ref i);
-                    if (list[i - 1].Type == CSharpLexer.OPEN_PARENS) i--;
-                    if(i > 1 && list[i].Type == CSharpLexer.OPEN_PARENS && list[i-1].Type == CSharpLexer.IDENTIFIER)
+                    if (list[i - 1].Type == CSharpToken.OPEN_PARENS) i--;
+                    if(i > 1 && list[i].Type == CSharpToken.OPEN_PARENS && list[i-1].Type == CSharpToken.IDENTIFIER)
                     {
                         var method = list[i - 1].Text;
                         var p = GetPropPathFrom(list[i - 1].StartIndex - 1, list); // <-- This must include variable assignments
@@ -352,24 +345,24 @@ namespace TabularEditor.TextServices
 
     public class MethodCall
     {
-        public IToken StartToken;
-        public IToken StopToken;
+        public CSharpLexerToken StartToken;
+        public CSharpLexerToken StopToken;
         public int ParamCount;
     }
 
     public static class ScriptParserHelper
     {
-        public static List<MethodCall> FindGlobalPropertyRefs(this IList<IToken> tokens, HashSet<string> names)
+        public static List<MethodCall> FindGlobalPropertyRefs(this IList<CSharpLexerToken> tokens, HashSet<string> names)
         {
             var result = new List<MethodCall>();
             for(int i = 0; i < tokens.Count; i++)
             {
-                if (tokens[i].Type == CSharpLexer.IDENTIFIER && names.Contains(tokens[i].Text))
+                if (tokens[i].Type == CSharpToken.IDENTIFIER && names.Contains(tokens[i].Text))
                 {
                     for(int j = i - 1; j >= 0; j--)
                     {
-                        if (tokens[j].Channel == CSharpLexer.Hidden) continue;
-                        if (tokens[j].Type == CSharpLexer.DOT) break;
+                        if (tokens[j].Channel == CSharpTokenizer.HiddenChannel) continue;
+                        if (tokens[j].Type == CSharpToken.DOT) break;
                         result.Add(new MethodCall { StartToken = tokens[i], StopToken = tokens[i] });
                         break;
                     }
@@ -386,26 +379,26 @@ namespace TabularEditor.TextServices
         /// <param name="methodName">An optional method name to search for</param>
         /// <param name="parameters">The number of parameters the method should have. Use -1 for any number of parameters.</param>
         /// <returns></returns>
-        public static List<MethodCall> FindMethodCall(this IList<IToken> tokens, string methodName = null, int parameters = -1)
+        public static List<MethodCall> FindMethodCall(this IList<CSharpLexerToken> tokens, string methodName = null, int parameters = -1)
         {
             var result = new List<MethodCall>();
 
             for(int i = 0; i < tokens.Count; i++)
             {
-                if(tokens[i].Type == CSharpLexer.IDENTIFIER &&
+                if(tokens[i].Type == CSharpToken.IDENTIFIER &&
                     (methodName == null || tokens[i].Text == methodName) && 
                     i < tokens.Count - 2 && 
-                    tokens[i+1].Type == CSharpLexer.OPEN_PARENS)
+                    tokens[i+1].Type == CSharpToken.OPEN_PARENS)
                 {
                     // Find the corresponding close parens:
                     var parenDepth = 0;
                     var paramCount = 0;
                     for(int ix = i + 2; ix < tokens.Count; ix++)
                     {
-                        if (tokens[ix].Type != CSharpLexer.CLOSE_PARENS && paramCount == 0) paramCount++;
-                        if (tokens[ix].Type == CSharpLexer.COMMA && parenDepth == 0) paramCount++;
-                        if (tokens[ix].Type == CSharpLexer.OPEN_PARENS) parenDepth++;
-                        if (tokens[ix].Type == CSharpLexer.CLOSE_PARENS)
+                        if (tokens[ix].Type != CSharpToken.CLOSE_PARENS && paramCount == 0) paramCount++;
+                        if (tokens[ix].Type == CSharpToken.COMMA && parenDepth == 0) paramCount++;
+                        if (tokens[ix].Type == CSharpToken.OPEN_PARENS) parenDepth++;
+                        if (tokens[ix].Type == CSharpToken.CLOSE_PARENS)
                         {
                             if(parenDepth == 0)
                             {

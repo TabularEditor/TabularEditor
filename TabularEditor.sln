@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TOMWrapper", "TOMWrapper\TO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TabularEditorTest", "TabularEditorTest\TabularEditorTest.csproj", "{BA495540-1B2D-4C1D-8A91-CB4EC8C3DCC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntlrGrammars", "AntlrGrammars\AntlrGrammars.csproj", "{6453FB18-AF97-4D9C-9A50-17CBBCE091DD}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{75A8F23A-0A05-4410-A04A-4A6E3A8004C1}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -40,10 +38,6 @@ Global
 		{BA495540-1B2D-4C1D-8A91-CB4EC8C3DCC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA495540-1B2D-4C1D-8A91-CB4EC8C3DCC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA495540-1B2D-4C1D-8A91-CB4EC8C3DCC7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6453FB18-AF97-4D9C-9A50-17CBBCE091DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6453FB18-AF97-4D9C-9A50-17CBBCE091DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6453FB18-AF97-4D9C-9A50-17CBBCE091DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6453FB18-AF97-4D9C-9A50-17CBBCE091DD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3CF53981-9965-436B-9805-D6F844C2CE15}.Debug|Any CPU.ActiveCfg = Debug
 		{3CF53981-9965-436B-9805-D6F844C2CE15}.Release|Any CPU.ActiveCfg = Release
 		{546659EE-5DA6-4BAC-BD5E-0D898389201A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

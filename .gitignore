@@ -2,10 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/AntlrGrammars/obj
-/AntlrGrammars/bin
-/AntlrGrammars/CSharpLexer.g4.cs
-/AntlrGrammars/DAXLexer.g4.cs
 /TabularEditor/bin
 /TabularEditor/obj
 /TabularEditor/TabularEditor.csproj.user
@@ -59,7 +55,6 @@
 /Publish/*
 /.cr
 /TOMWrapperTest/obj
-/AntlrGrammars/obj
 **/.vs
 bin/
 obj/

@@ -20,5 +20,6 @@
     <Compile Include="..\TabularEditor\TextServices\CSharpToken.cs" Link="Linked\CSharpToken.cs" />
     <Compile Include="..\TabularEditor\TextServices\CSharpTokenizer.cs" Link="Linked\CSharpTokenizer.cs" />
     <Compile Include="..\TabularEditor\TextServices\CSharpLexerToken.cs" Link="Linked\CSharpLexerToken.cs" />
+    <Compile Include="..\TabularEditor\TextServices\ScriptParser.cs" Link="Linked\ScriptParser.cs" />
   </ItemGroup>
 </Project>

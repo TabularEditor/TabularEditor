@@ -437,7 +437,7 @@ Write-Step 'Build application (MSBuild, .NET Framework 4.8)'
 
 # Building the app project rather than the solution, because the solution also contains
 # the .vdproj deployment project, which MSBuild cannot build. Project references pull in
-# TOMWrapper and AntlrGrammars.
+# TOMWrapper.
 Invoke-Native -FilePath $vs.MSBuild -Arguments @(
     $AppProject,
     '-t:Build',

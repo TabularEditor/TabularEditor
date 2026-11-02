@@ -61,9 +61,9 @@ namespace TabularEditor
             var currentTypeDefStart = -1;
             foreach(var t in tokens)
             {
-                if (braces == 0 && currentTypeDefStart == -1 && t.Type == CSharpLexer.SEMICOLON) lastClosingBracePos = t.StartIndex;
-                if (t.Type == CSharpLexer.OPEN_BRACE) braces++;
-                if (t.Type == CSharpLexer.CLOSE_BRACE)
+                if (braces == 0 && currentTypeDefStart == -1 && t.Type == CSharpToken.SEMICOLON) lastClosingBracePos = t.StartIndex;
+                if (t.Type == CSharpToken.OPEN_BRACE) braces++;
+                if (t.Type == CSharpToken.CLOSE_BRACE)
                 {
                     braces--;
                     if(braces == 0 && currentTypeDefStart > -1)
@@ -74,7 +74,7 @@ namespace TabularEditor
                     lastClosingBracePos = t.StartIndex;
                 }
                 
-                if(braces == 0 && currentTypeDefStart == -1 && (t.Type == CSharpLexer.ENUM || t.Type == CSharpLexer.CLASS || t.Type == CSharpLexer.STRUCT || t.Type == CSharpLexer.INTERFACE))
+                if(braces == 0 && currentTypeDefStart == -1 && (t.Type == CSharpToken.ENUM || t.Type == CSharpToken.CLASS || t.Type == CSharpToken.STRUCT || t.Type == CSharpToken.INTERFACE))
                 {
                     currentTypeDefStart = lastClosingBracePos + 1;
                 }
@@ -188,7 +188,7 @@ namespace TabularEditor
             var pos = 0;
             foreach (var call in methodCallsAndPropertyRefs)
             {
-                if(call.StartToken.TokenIndex == 0 || tokens[call.StartToken.TokenIndex - 1].Type != CSharpLexer.DOT)
+                if(call.StartToken.TokenIndex == 0 || tokens[call.StartToken.TokenIndex - 1].Type != CSharpToken.DOT)
                 {
                     var member = ScriptMethods.ContainsKey(call.StartToken.Text) ? (MemberInfo)ScriptMethods[call.StartToken.Text] : ScriptProperties[call.StartToken.Text];
 
