@@ -42,6 +42,7 @@
     <Compile Include="TOMWrapper\Utils\DbConnectionStringBuilderExtension.cs" />
     <Compile Include="TOMWrapper\Utils\DaxDependencyHelper.cs" />
     <Compile Include="TOMWrapper\Utils\DaxToken.cs" />
+    <Compile Include="TOMWrapper\Utils\DaxToken.Generated.cs" />
     <Compile Include="TOMWrapper\Utils\DependencyList.cs" />
     <Compile Include="TOMWrapper\Utils\FormulaFixup.cs" />
     <Compile Include="TOMWrapper\Utils\JObjectExtension.cs" />
@@ -59,6 +60,7 @@
     </PackageReference>
     <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Parlot" Version="2.2.1" />
     <PackageReference Include="System.CodeDom" Version="8.0.0" />
     <PackageReference Include="System.Data.OleDb" Version="8.0.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />

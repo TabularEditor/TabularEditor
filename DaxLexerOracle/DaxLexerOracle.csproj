@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The ANTLR lexer of DAX, generated from the original grammar. It is the reference the Parlot lexer is compared to in DaxLexerTests and DaxLexerBenchmarks, and isn't part of the product. -->
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net472</TargetFrameworks>
+    <LangVersion>10.0</LangVersion>
+    <NoWarn>$(NoWarn);CS3021</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Antlr4 Remove="**\*.g4" />
+    <Antlr4 Include="DAXLexer.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>DaxLexerOracle</CustomToolNamespace>
+    </Antlr4>
+  </ItemGroup>
+</Project>

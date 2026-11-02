@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BPALib.csproj" />
+    <ProjectReference Include="..\DaxLexerOracle\DaxLexerOracle.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\TOMWrapperTest\TestData\*.bim" Link="Corpus\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\TabularEditorTest\AdventureWorks.bim" Link="Corpus\TE_AdventureWorks.bim" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
