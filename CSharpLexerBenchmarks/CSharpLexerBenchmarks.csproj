@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('Windows'))">net8.0;net48</TargetFrameworks>
+    <LangVersion>10.0</LangVersion>
+    <Optimize>true</Optimize>
+    <IsPackable>false</IsPackable>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <NoWarn>$(NoWarn);CS3021</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+    <PackageReference Include="Parlot" Version="2.2.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpLexerOracle\CSharpLexerOracle.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\TabularEditor\TextServices\CSharpToken.cs" Link="Linked\CSharpToken.cs" />
+    <Compile Include="..\TabularEditor\TextServices\CSharpTokenizer.cs" Link="Linked\CSharpTokenizer.cs" />
+    <Compile Include="..\TabularEditor\TextServices\CSharpLexerToken.cs" Link="Linked\CSharpLexerToken.cs" />
+  </ItemGroup>
+</Project>
