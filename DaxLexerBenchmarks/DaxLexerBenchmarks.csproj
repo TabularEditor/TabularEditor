@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('Windows'))">net8.0;net48</TargetFrameworks>
+    <LangVersion>10.0</LangVersion>
+    <Optimize>true</Optimize>
+    <IsPackable>false</IsPackable>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <NoWarn>$(NoWarn);CS3021</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BPALib.csproj" />
+    <ProjectReference Include="..\DaxLexerOracle\DaxLexerOracle.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\TabularEditorTest\AdventureWorks.bim" Link="AdventureWorks.bim" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
