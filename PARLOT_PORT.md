@@ -1,7 +1,9 @@
-# Parlot for the DAX lexer
+# Parlot for the lexers
 
-This branch replaces the ANTLR lexer of DAX with one built on [Parlot](https://github.com/sebastienros/parlot)'s
-`Cursor`, and removes ANTLR from `TOMWrapper` and `BPALib`. It returns the same tokens as ANTLR on every input tested:
+These branches replace the ANTLR lexers of DAX and C# with ones built on
+[Parlot](https://github.com/sebastienros/parlot)'s `Cursor`, and remove ANTLR and its Java build step from the product:
+`TOMWrapper`, `BPALib`, `TabularEditor`, the installer and `TabularEditor.sln`. ANTLR only remains in the two oracle
+projects of `BPALib.sln`, which the tests compare with. The lexers return the same tokens as ANTLR on every input tested:
 type, channel, text, start and stop index, line and column. The token IDs of `DaxToken`, which Best Practice Analyzer
 rules use by name, don't change.
 
@@ -9,8 +11,8 @@ On .NET Framework 4.8, which Tabular Editor 2 runs on, rebuilding the dependency
 expressions is **3.2x faster and allocates 5.6x less**. The lexing part of a keystroke in the expression editor is
 **6.4x faster and allocates 4.1x less**.
 
-The C# lexer (`CSharpLexer`, for scripts) still uses ANTLR, so `Antlr4.Runtime` still ships with the application. See
-[What this leaves out](#what-this-leaves-out).
+Lexing a script is 5x to 9x faster and allocates 3x to 4x less on .NET Framework 4.8. See
+[The C# lexer](#the-c-lexer), which has its own section below; the sections in between are about DAX.
 
 ## What changed
 
@@ -138,12 +140,102 @@ These were built with `dotnet msbuild`, using a local, uncommitted `Directory.Bu
 - The installer (`.vdproj`). `Parlot.dll` must end up in it. Its detected dependencies should pick it up on a refresh in
   Visual Studio, which needs checking.
 
+## The C# lexer
+
+`feature/parlot-csharp-lexer`, on top of the DAX work.
+
+| Area | Files |
+|---|---|
+| Lexer | `TabularEditor/TextServices/CSharpTokenizer.cs`, `CSharpLexerToken.cs` (a struct, as for DAX), `CSharpToken.cs` (the token types, same names and values as the grammar) |
+| Consumers | `ScriptParser`, `ScriptEngine`: `IToken` becomes `CSharpLexerToken`, the rest is the same logic |
+| Removed | `CSharpLexer.cs` (generated), the `AntlrGrammars` project, `Antlr4.Runtime` from `TabularEditor` and from the installer |
+| New projects, in `BPALib.sln` | `CSharpLexerOracle` (the original grammar with ANTLR, only for comparing), `CSharpLexerTests`, `CSharpLexerBenchmarks`. `TabularEditor` is a Windows Forms application, so the tests compile the lexer and `ScriptParser` in as linked files, which also runs them on macOS |
+
+`CSharpLexer` was a public type of `TabularEditor`, and `MethodCall` exposed `IToken`, so code that used them directly
+stops compiling.
+
+The output generated from the grammar with ANTLR 4.6.6 is identical to the `CSharpLexer.cs` that was checked in, apart
+from its namespace, so the oracle is what used to ship.
+
+### What the lexer copies from the grammar
+
+- Identifiers only have ASCII letters, digits and unicode escapes, and `_` can only start one: `a_b` is two identifiers
+  and `é` is dropped. `__arglist1` is the keyword, then a number.
+- The error recovery of the DAX lexer: `"a\q"` loses `"a\q` and then starts a string at the last quote.
+- `/**/ x */` is one documentation comment, as that's the longest match, but `/**/ x` is a comment and then `x`.
+- `/* never closed` is a division, a star, and what follows.
+- Modes: a `{` in an interpolated string enters the default mode with a count of braces, and a colon with a `}` before
+  the next `:` or `)` switches to the format string. This looks at chars, not tokens, so a `)` in a string counts.
+
+**The only difference, on purpose.** The grammar's action for that colon doesn't stop at the end of the script: for
+`$"{a:` it keeps reading until the index overflows, and throws `IndexOutOfRangeException` after about 2^31 reads, which
+takes 13 to 27 seconds here. The new lexer throws the same
+exception, after the same tokens, right away. In the differential tests the ANTLR side has an input stream that also
+throws right away, and `ColonLooksPastTheEndUntilTheIndexOverflows` checks once that the real stream ends the same way.
+
+The stacks can't underflow, as far as the tests and the reasoning go: each hole of a string pushes one level and each way
+out pops one, whatever the mode. The lexer keeps the same operations, so it would throw the same `InvalidOperationException`
+from `Stack<T>` for a stack of braces. No test reached it on either side. Only the colon's exception was observed.
+
+### How parity was checked
+
+| Test | Input |
+|---|---|
+| `EveryCharInEveryContext` | All 65,536 UTF-16 code units in 93 contexts, covering the five modes |
+| `AllShortStringsOfTheStructuralChars` | Every string of 5 to 10 pieces or fewer over 17 alphabets: comments, strings, numbers, identifiers, interpolations in all modes, directives |
+| `RandomStrings`, `RandomInterpolatedStrings` | 1,002,000 random strings, of which 500,000 start with an interpolated string |
+| `EveryLiteralOfTheGrammar` | All keywords and operators in 22 contexts, and all their prefixes |
+| `RealSources`, `RealSourcesCutAnywhere` | Every `.cs` file of the application and its tests, and every prefix of the 100 shortest |
+| `TokenTypesMatchTheGrammar` | Every token type and channel against the grammar |
+| `ConsumerTests` | `ScriptParser` against a copy of its ANTLR version: tokens, method calls, property references on all sources, `GetTypeAtPos` at every position of some scripts, and tokens kept after an exception |
+
+Changing a line of the lexer on purpose (the end of a documentation comment, restoring `verbatium` after a nested string,
+one white space char) fails between 3 and 5 of the 6 test cases of the random and literal tests.
+
+### Benchmarks
+
+BenchmarkDotNet, 8 iterations, x64 on the same VM as above, one run per runtime. Small is one step of a script (251 chars,
+78 tokens), Medium 40 of them (17,979 chars, 6,055), Large 400 (182,079 chars, 60,415), with interpolated strings,
+comments and literals. "List" is what `ScriptParser.Lex` does, "no list" only reads the tokens.
+
+```bash
+dotnet run -c Release --project CSharpLexerBenchmarks/CSharpLexerBenchmarks.csproj -f net8.0 -- --filter '*'
+```
+
+| Runtime | Size | ANTLR | Parlot list | Parlot no list | Time, list | Allocated, ANTLR → list |
+|---|---|---:|---:|---:|---:|---:|
+| .NET Framework 4.8 | Small | 57.5 µs | 6.6 µs | 5.3 µs | 8.8x faster | 27.9 KB → 8.6 KB |
+| .NET Framework 4.8 | Medium | 3.14 ms | 0.56 ms | 0.40 ms | 5.6x faster | 1.5 MB → 526 KB |
+| .NET Framework 4.8 | Large | 41.8 ms | 4.9 ms | 4.0 ms | 8.6x faster | 16.1 MB → 4.2 MB |
+| .NET 8 x64 | Small | 27.5 µs | 2.9 µs | 1.4 µs | 9.4x faster | 26.6 KB → 8.6 KB |
+| .NET 8 x64 | Medium | 1.51 ms | 0.31 ms | 0.10 ms | 4.9x faster | 1.5 MB → 525 KB |
+| .NET 8 x64 | Large | 19.7 ms | 2.2 ms | 0.96 ms | 9.0x faster | 15.4 MB → 4.2 MB |
+
+Without a list the lexer allocates 344 to 384 bytes, for the stacks of the interpolated strings.
+
+The first script of a process, in a new process each time, with the JIT: `CSharpLexerBenchmarks --first antlr|parlot`,
+Small, three runs. ANTLR also loads its automaton.
+
+| Runtime | ANTLR | Parlot |
+|---|---:|---:|
+| .NET Framework 4.8 | 95 to 105 ms | 43 to 65 ms |
+| .NET 8 x64 | 58 to 61 ms | 8 to 17 ms |
+
+### What was run on Windows
+
+On the same VM, with the same workarounds as above, and the ANTLR lexer of the oracle generated on a Mac and copied over.
+
+| What | Result |
+|---|---|
+| `CSharpLexerTests` on net48 and net8.0 | 15 of 15 pass on each |
+| `TOMWrapperTest` on net48 | 683 of 713 pass, the same outcome as `master` for each test |
+| `TabularEditorTest` on net48 | 40 of 55 pass, the same outcome as `master` for each test, including the `ReplaceGlobalMethodCalls*` and script tests that go through `ScriptEngine` |
+| `TabularEditor.exe` | Compiles, and no `Antlr4.Runtime.dll` in its output |
+
+**Not run:** as above, the application by hand (the script editor's AutoComplete is only covered by comparing
+`GetTypeAtPos`), a build with Visual Studio, and the installer. `Antlr4.Runtime.dll` was removed from `.vdproj` by editing
+the file, and `Parlot.dll` still isn't listed in it, so a refresh of its detected dependencies in Visual Studio needs checking.
+
 ## What this leaves out
 
-**The C# lexer.** `CSharpLexer` isn't on a hot path, as it only runs when a script runs or is completed, and it is a
-harder port: five lexer modes, predicates, and stacks for interpolated strings. Until it's done `Antlr4.Runtime`
-stays in `TabularEditor` and `AntlrGrammars` stays in the solution (its output is checked in, so only that grammar's
-regeneration needs Java).
-
-**Size.** `Parlot.dll` (net472) is 602 KB against 215 KB for `Antlr4.Runtime.dll`, and both ship until the above is
-done. The lexer only needs `Cursor` from it.
+**Size.** `Parlot.dll` (net472) is 602 KB, where `Antlr4.Runtime.dll` was 215 KB. The lexers only need `Cursor` from it.
